@@ -3,6 +3,7 @@
   margin: 0;
   box-sizing: border-box;
 }
+
 .loader {
   position: absolute;
   z-index: 999;
@@ -12,11 +13,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   svg {
     height: auto;
     width: 5rem;
     fill: black;
   }
+
   svg {
     animation: Loader-spin infinite 20s linear;
   }
@@ -25,6 +28,7 @@
     from {
       transform: rotate(0deg);
     }
+
     to {
       transform: rotate(360deg);
     }
