@@ -1,22 +1,115 @@
-import React from "react";
-import { NavbarContainer, NavBrand } from "./nav.styled.js";
-import { NavLink } from "react-router-dom";
+import React, { useState, useRef, createRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import gsap from 'gsap';
+import HeaderNav from './HeaderNav';
+import HeaderLogo from './HeaderLogo';
+import HeaderBurger from './HeaderBurger';
+import HeaderCart from './HeaderCart';
+import { useMediaQuery } from '../../../hooks';
 
-const Navbar = () => {
+const Header = ({ items, logo, navPosition }) => {
+  //Setup state to determine if menu is open or not
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isSmallScreen = useMediaQuery('(max-width: 989px)');
+
+  //Setup the Nav ref
+  const navRef = useRef();
+
+  //Loop through the items and create a state of navItems with refs
+  //to use for our animation
+  const [navItems] = useState(
+    items.map((item) => {
+      return {
+        ...item,
+        ref: createRef(),
+      };
+    })
+  );
+
+  //Setup a timeline to use
+  const [menuTL] = useState(
+    gsap.timeline({
+      paused: true,
+      defaults: { duration: 1, ease: 'expo.out' },
+    })
+  );
+
+  //Setup menuTL things and account for window resize events
+  useEffect(() => {
+    //Build the timeline and worry about resize events
+    if (navPosition === 'right' || navPosition === 'center') {
+      //Create an array with just the ref of the nav items
+      const itemsRefs = navItems.map((item) => item.ref.current);
+
+      if (isSmallScreen) {
+        menuTL
+          .fromTo(navRef.current, { opacity: 0 }, { opacity: 1 })
+          .fromTo(
+            itemsRefs,
+            { autoAlpha: 0, y: 48 },
+            { autoAlpha: 1, y: 0, stagger: 0.1 },
+            '-=0.4'
+          )
+          .reverse();
+      } else {
+        setIsMenuOpen(false);
+        menuTL.seek(0).clear().pause();
+        gsap.set([navRef.current, itemsRefs], { clearProps: 'all' });
+      }
+    }
+  }, [isSmallScreen]);
+
+  //Setup menuTL things to work on any screen size
+  useEffect(() => {
+    //Build the timeline and keep it for a full overlay all the time
+    if (navPosition === 'overlay') {
+      //Create an array with just the ref of the nav items
+      const itemsRefs = navItems.map((item) => item.ref.current);
+
+      menuTL
+        .fromTo(navRef.current, { opacity: 0 }, { opacity: 1 })
+        .fromTo(
+          itemsRefs,
+          { autoAlpha: 0, y: 50 },
+          { autoAlpha: 1, y: 0, stagger: 0.5 },
+          '-=0.3'
+        )
+        .reverse();
+    }
+  }, []);
+
+  //Run menuTL base on Menu State
+  useEffect(() => {
+    menuTL.reversed(!isMenuOpen);
+  }, [isMenuOpen]);
+
+  //onClick function to set state of menu
+  const toggleNav = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <NavbarContainer>
-      <NavBrand><NavLink to="/">KickStore</NavLink></NavBrand>
-      <ul>
-        <li>
-          <NavLink to="/">Shop</NavLink>
-        </li>
-        <li>
-          <NavLink to="/login">Sign In</NavLink>
-        </li>
-        <li>Cart</li>
-      </ul>
-    </NavbarContainer>
+    <header className="header">
+      <div className="header__wrapper" data-nav-position={navPosition}>
+        <HeaderLogo logo={logo} />
+        <HeaderNav items={navItems} isMenuOpen={isMenuOpen} ref={navRef} />
+        <HeaderCart />
+        <HeaderBurger toggleNav={toggleNav} isMenuOpen={isMenuOpen} />
+      </div>
+    </header>
   );
 };
 
-export default Navbar;
+export default Header;
+
+//Adding some propTypes for some checks and balances
+Header.propTypes = {
+  items: PropTypes.array.isRequired,
+  logo: PropTypes.element.isRequired,
+  navPosition: PropTypes.oneOf(['center', 'right', 'overlay']),
+};
+
+// Specifies the default value for the nvaPosition prop:
+Header.defaultProps = {
+  navPosition: 'center',
+};

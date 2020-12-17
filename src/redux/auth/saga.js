@@ -1,15 +1,21 @@
-import { all, call, fork, put, takeEvery } from "redux-saga/effects";
+import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 import {
   LOGIN_USER,
   REGISTER_USER,
   REGISTER_USER_SUCCESS,
-  SIGN_OUT_START,
+  SIGN_OUT,
   FORGOT_PASSWORD,
   USER_SESSION,
   RESET_PASSWORD,
-  GOOGLE_SIGN_IN_START,
-} from "../actions";
-import Firebase from "../../helpers/Firebase.ts";
+  GOOGLE_SIGN_IN,
+} from '../actions';
+import {
+  auth,
+  googleProvider,
+  createUserProfileDocument,
+  getCurrentUser,
+  isAdmin,
+} from '../../helpers/Firebase.ts';
 import {
   loginUserSuccess,
   loginUserError,
@@ -21,27 +27,16 @@ import {
   resetPasswordError,
   logoutUserFailure,
   logoutUserSuccess,
-} from "./actions";
-
-const {
-  auth,
-  googleProvider,
-  createUserProfileDocument,
-  getCurrentUser,
-  isAdmin,
-} = new Firebase();
+} from './actions';
 
 export function* getSnapshotFromUserAuth(userAuth, additionalData) {
-  console.log(userAuth, additionalData);
   try {
     const userRef = yield call(
       createUserProfileDocument,
       userAuth,
       additionalData
     );
-    console.log(userRef);
     const userSnapshot = yield userRef.get();
-    console.log(userSnapshot);
     yield put(
       loginUserSuccess({
         uid: userSnapshot.id,
@@ -69,7 +64,7 @@ function* loginWithEmailPassword({ payload: { email, password, history } }) {
       email,
       password
     );
-    console.log("logged in user", loggedInUser);
+    console.log('logged in user', loggedInUser);
     const { uid } = loggedInUser.user;
     const userIsAdmin = yield isAdmin(uid);
     if (userIsAdmin.isAdmin) {
@@ -80,24 +75,23 @@ function* loginWithEmailPassword({ payload: { email, password, history } }) {
     history.push(`/`);
     yield put(loginUserSuccess(loggedInUser, userIsAdmin));
   } catch (error) {
-    console.log(error);
-    yield put(loginUserError(error));
+    yield put(loginUserError(error.message));
   }
 }
 
 export function* watchSignInWithGoogle() {
-  yield takeEvery(GOOGLE_SIGN_IN_START, signInWithGoogle);
+  yield takeEvery(GOOGLE_SIGN_IN, signInWithGoogle);
 }
 const googleSignIn = async () => {
   const { user } = await auth.signInWithPopup(googleProvider);
   return user;
 };
-function* signInWithGoogle({}) {
+function* signInWithGoogle() {
   try {
     const user = yield call(googleSignIn);
     yield getSnapshotFromUserAuth(user);
   } catch (error) {
-    yield put(loginUserError(error));
+    yield put(loginUserError(error.message));
   }
 }
 export function* watchRegisterUser() {
@@ -105,7 +99,6 @@ export function* watchRegisterUser() {
 }
 
 const registerAsync = async ({ email, password }) => {
-  console.log(email, password);
   const { user } = await auth.createUserWithEmailAndPassword(email, password);
   return user;
 };
@@ -114,9 +107,9 @@ function* register({ payload: { displayName, email, password, history } }) {
   try {
     const user = yield call(registerAsync, { email, password });
     yield put(registerUserSuccess(user, { displayName }));
-    history.push("/");
+    history.push('/');
   } catch (error) {
-    yield put(registerUserError(error));
+    yield put(registerUserError(error.message));
   }
 }
 
@@ -125,12 +118,11 @@ export function* watchSignInAfterRegister() {
 }
 
 function* signInAfterRegister({ payload: { user, additionalData } }) {
-  console.log(user, additionalData);
   yield getSnapshotFromUserAuth(user, additionalData);
 }
 
 export function* watchLogoutUser() {
-  yield takeEvery(SIGN_OUT_START, logout);
+  yield takeEvery(SIGN_OUT, logout);
 }
 
 const logoutAsync = async (history) => {
@@ -144,7 +136,7 @@ function* logout({ payload }) {
     yield call(logoutAsync, history);
     yield put(logoutUserSuccess());
   } catch (error) {
-    yield put(logoutUserFailure(error));
+    yield put(logoutUserFailure(error.message));
   }
 }
 
@@ -154,11 +146,10 @@ export function* watchIsUserAuthenticated() {
 export function* isUserAuthenticated() {
   try {
     const userAuth = yield getCurrentUser();
-    console.log(userAuth);
     if (!userAuth) return;
     yield getSnapshotFromUserAuth(userAuth);
   } catch (error) {
-    yield put(loginUserError(error));
+    yield put(loginUserError(error.message));
   }
 }
 

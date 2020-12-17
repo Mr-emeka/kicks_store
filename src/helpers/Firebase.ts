@@ -1,7 +1,7 @@
-import app from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
+import app from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/storage';
 
 const {
   REACT_APP_apiKey,
@@ -25,10 +25,11 @@ const config = {
   // measurementId: REACT_APP_measurementId,
 };
 
-export default class Firebase {
+class Firebase {
   auth: app.auth.Auth;
   db: app.firestore.Firestore;
   bucket: app.storage.Storage;
+  fieldValue = app.firestore.FieldValue;
   googleProvider = new app.auth.GoogleAuthProvider();
   constructor() {
     app.initializeApp(config);
@@ -36,7 +37,8 @@ export default class Firebase {
     this.db = app.firestore();
     this.bucket = app.storage();
     this.googleProvider = new app.auth.GoogleAuthProvider();
-    this.googleProvider.setCustomParameters({ prompt: "select_account" });
+    this.googleProvider.setCustomParameters({ prompt: 'select_account' });
+    this.fieldValue = app.firestore.FieldValue;
   }
 
   createUserProfileDocument = async (userAuth: any, additionalData: any) => {
@@ -45,16 +47,17 @@ export default class Firebase {
     const snapShot = await userRef.get();
     if (!snapShot.exists) {
       const { displayName, email } = userAuth;
-      const createdAt = new Date();
+      const createdAt = this.fieldValue.serverTimestamp();
       try {
         await userRef.set({
           displayName,
           email,
           createdAt,
+          isAdmin: true,
           ...additionalData,
         });
       } catch (err) {
-        console.log("error creating user", err.message);
+        console.log('error creating user', err.message);
       }
     }
     return userRef;
@@ -70,22 +73,47 @@ export default class Firebase {
     await batch.commit();
   };
 
-  convertCollectionSnapshotToMap = (collections: any) => {
+  addCollectionAndDocument = async (
+    collectionKey: string,
+    objectToAdd: Object
+  ) => {
+    const collectionRef = this.db.collection(collectionKey);
+    const batch = this.db.batch();
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, objectToAdd);
+    await batch.commit();
+  };
+  addProduct = async (documentKey: string, objectToAdd: Object) => {
+    const docRef = this.db.collection(`products`);
+    await docRef.add({
+      ...objectToAdd,
+      categoryId: documentKey,
+    });
+  };
+  convertCategorySnapshotToMap = (collections: any) => {
     const transformedCollections = collections.docs.map((doc: any) => {
-      const { title, items } = doc.data();
+      const { categoryName, imageUrl } = doc.data();
       return {
-        routeName: encodeURI(title.toLowerCase()),
+        categoryName,
+        imageUrl,
         id: doc.id,
-        title,
-        items,
+        routeName: encodeURI(categoryName.toLowerCase()),
       };
     });
-    return transformedCollections.reduce((acc: any, collection: any) => {
-      acc[collection.title.toLowerCase()] = collection;
-      return acc;
-    }, {});
-  };
+    return transformedCollections;
 
+    // return transformedCollections.reduce((acc: any, collection: any) => {
+    //   acc[collection.categoryName.toLowerCase()] = collection;
+    //   return acc;
+    // }, {});
+  };
+  convertCollectionSnapshotToMap = (collections: any) => {
+    const transformedCollections = collections.docs.map((doc: any) => {
+      const { name, imageUrl, price, categoryId } = doc.data();
+      return { name, imageUrl, id: doc.id, price, categoryId };
+    });
+    return transformedCollections;
+  };
   getCurrentUser = () => {
     return new Promise((resolve, reject) => {
       const unsubscribe = this.auth.onAuthStateChanged((userAuth) => {
@@ -103,6 +131,20 @@ export default class Firebase {
     });
     return data;
   };
-
   signInWithGoogle = () => this.auth.signInWithPopup(this.googleProvider);
 }
+
+export const {
+  addCollectionAndDocuments,
+  auth,
+  googleProvider,
+  createUserProfileDocument,
+  getCurrentUser,
+  isAdmin,
+  bucket,
+  db,
+  addProduct,
+  convertCollectionSnapshotToMap,
+  convertCategorySnapshotToMap,
+  addCollectionAndDocument,
+} = new Firebase();

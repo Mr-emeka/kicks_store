@@ -1,0 +1,63 @@
+// A directory which has a .scss file for each page that requires custom styles
+
+.main {
+  padding: 10rem 0 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @include media-query($medium_down) {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 8rem 0 0 0;
+  }
+
+  &__content {
+    text-align: center;
+    justify-content: center;
+    align-self: center;
+  }
+
+  &__conference-img {
+    @include media-query($medium_down) {
+      display: none;
+    }
+  }
+
+  .btn {
+    &__section-create {
+      cursor: pointer;
+      margin-right: 1rem;
+      width: 156px;
+      height: 45px;
+      background: #aaccca;
+      border-radius: 5px;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 19px;
+      color: white;
+      border: none;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    &__section-join {
+      cursor: pointer;
+      width: 156px;
+      height: 45px;
+      background: #dc3030;
+      border-radius: 5px;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 19px;
+      color: white;
+      border: none;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

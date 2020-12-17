@@ -1,0 +1,182 @@
+// The file that imports all other scss
+//  Any SCSS file without an underscore at the beginning is compiled as a different stylesheet.
+@import './variables';
+@import './elements';
+@import './mixins';
+
+@import './components/main.scss';
+@import './pages/home.scss';
+@import '~bootstrap/scss/bootstrap';
+
+:root {
+  --montserrat: 'Montserrat', sans-serif;
+  --color-white: #ffffff;
+  --color-black: #000000;
+}
+
+*,
+*:before,
+*:after {
+  padding: 0;
+  margin: 0;
+  box-sizing: inherit;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: var(--montserrat);
+  font-weight: 400;
+}
+
+a {
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.hero {
+  width: 100vw;
+  height: 100vh;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.auth-form {
+  min-width: 50%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #c5c5c5;
+  -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  margin-top: 10%;
+  input.form-control {
+    outline: none;
+    border-radius: 6px 6px 6px 6px;
+    &:focus {
+      background: transparent;
+      border: 1px solid grey;
+      box-shadow: none;
+    }
+  }
+}
+input.form-control {
+  outline: none;
+  border-radius: 6px 6px 6px 6px;
+  &:focus {
+    background: transparent;
+    border: 1px solid grey;
+    box-shadow: none;
+  }
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 1rem;
+  text-align: center;
+}
+.grid > div {
+  // background: #ede7f6;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+.overlay {
+  position: fixed;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  cursor: pointer;
+}
+
+.content {
+  margin: 10% auto;
+  background-color: white;
+  border-radius: 0.3rem;
+  width: 50vw;
+  padding: 1.5rem 1rem;
+  position: relative;
+}
+
+svg {
+  width: 1.5em;
+  height: auto;
+  cursor: pointer;
+}
+
+.filedrop {
+  min-height: 120px;
+  border: 3px solid #d3d3d3;
+  text-align: center;
+  font-size: 24px;
+  padding: 32px;
+  border-radius: 4px;
+  &__drag {
+    border: 3px dashed #1e90ff;
+  }
+  &__ready {
+    border: 3px solid #32cd32;
+  }
+}
+
+.loader {
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    height: auto;
+    width: 5rem;
+    fill: black;
+  }
+
+  svg {
+    animation: Loader-spin infinite 20s linear;
+  }
+
+  @keyframes Loader-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.error {
+  display: grid;
+  justify-content: center;
+  &__svg {
+    width: auto;
+    height: 100vh;
+  }
+  @include media-query($medium-down) {
+    &__svg {
+      width: 100%;
+      height: 100vh;
+    }
+  }
+}

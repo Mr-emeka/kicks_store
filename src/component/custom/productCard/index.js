@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 const ProductCard = ({ name, id, imgUrl }) => {
   return (
     <div className="flex-column d-flex">
-      <img src={imgUrl} alt={name} className="img-responsive" />
+      <img src={imgUrl} height="240px" alt={name} className="img-responsive" />
       <div>
         <h5>{name}</h5>
       </div>

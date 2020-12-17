@@ -2,11 +2,11 @@ import {
   LOGIN_USER,
   LOGIN_USER_SUCCESS,
   LOGIN_USER_ERROR,
-  SIGN_OUT_START,
+  SIGN_OUT,
   SIGN_OUT_SUCCESS,
   SIGN_OUT_ERROR,
   SET_CURRENT_USER,
-  GOOGLE_SIGN_IN_START,
+  GOOGLE_SIGN_IN,
   USER_SESSION,
   REGISTER_USER,
   REGISTER_USER_SUCCESS,
@@ -20,7 +20,7 @@ import {
   UPLOAD_IMAGE,
   UPLOAD_IMAGE_SUCCESS,
   UPLOAD_IMAGE_ERROR,
-} from "../actions";
+} from '../actions';
 
 export const uploadImage = (image) => ({
   type: UPLOAD_IMAGE,
@@ -47,7 +47,7 @@ export const userSession = () => ({
 });
 
 export const googleSignInStart = () => ({
-  type: GOOGLE_SIGN_IN_START,
+  type: GOOGLE_SIGN_IN,
 });
 
 export const loginUserSuccess = (user, docs) => ({
@@ -109,7 +109,7 @@ export const registerUserError = (message) => ({
   payload: { message },
 });
 export const logoutUser = (history) => ({
-  type: SIGN_OUT_START,
+  type: SIGN_OUT,
   payload: { history },
 });
 export const logoutUserSuccess = () => ({

@@ -1,0 +1,19 @@
+.logo {
+  grid-column: 1/2;
+  align-self: center;
+
+  svg {
+    height: 42px;
+    width: auto;
+  }
+  @include media-query($medium-down) {
+    svg {
+      height: 20px;
+    }
+  }
+  @include media-query($small) {
+    svg {
+      display: none;
+    }
+  }
+}

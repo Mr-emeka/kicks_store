@@ -2,7 +2,7 @@ import {
   LOGIN_USER,
   LOGIN_USER_SUCCESS,
   LOGIN_USER_ERROR,
-  SIGN_OUT_START,
+  SIGN_OUT,
   SIGN_OUT_SUCCESS,
   SIGN_OUT_ERROR,
   REGISTER_USER,
@@ -17,61 +17,60 @@ import {
   // UPLOAD_IMAGE,
   // UPLOAD_IMAGE_SUCCESS,
   // UPLOAD_IMAGE_ERROR,
-} from "../actions";
+} from '../actions';
 
 const INIT_STATE = {
-  currentUser: "",
-  isAdmin: "",
-  forgotUserMail: "",
-  newPassword: "",
-  resetPasswordCode: "",
+  currentUser: '',
+  isAdmin: '',
+  forgotUserMail: '',
+  newPassword: '',
+  resetPasswordCode: '',
   loading: false,
-  error: "",
+  error: '',
 };
 
 export default (state = INIT_STATE, action) => {
   switch (action.type) {
     case LOGIN_USER:
-      return { ...state, loading: true, error: "" };
+      return { ...state, loading: true, error: '' };
     case LOGIN_USER_SUCCESS:
       return {
         ...state,
         loading: false,
         currentUser: action.payload.uid || action.payload.user.uid,
         isAdmin: action.payload.isAdmin || action.payload.docs.isAdmin,
-        error: "",
+        error: '',
       };
     case FORGOT_PASSWORD:
-      return { ...state, loading: true, error: "" };
+      return { ...state, loading: true, error: '' };
     case FORGOT_PASSWORD_SUCCESS:
       return {
         ...state,
         loading: false,
         forgotUserMail: action.payload,
-        error: "",
+        error: '',
       };
     case RESET_PASSWORD:
-      return { ...state, loading: true, error: "" };
+      return { ...state, loading: true, error: '' };
     case RESET_PASSWORD_SUCCESS:
       return {
         ...state,
         loading: false,
         newPassword: action.payload,
-        resetPasswordCode: "",
-        error: "",
+        resetPasswordCode: '',
+        error: '',
       };
     case REGISTER_USER:
-      return { ...state, loading: true, error: "" };
+      return { ...state, loading: true, error: '' };
     case REGISTER_USER_SUCCESS:
-      console.log(action.payload);
       return {
         ...state,
         loading: false,
         currentUser: action.payload.user.uid,
-        error: "",
+        error: '',
       };
-    case SIGN_OUT_START:
-      return { ...state, loading: true, error: "" };
+    case SIGN_OUT:
+      return { ...state, loading: true, error: '' };
     case SIGN_OUT_SUCCESS:
       return {
         ...state,
@@ -87,8 +86,8 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         loading: false,
-        newPassword: "",
-        resetPasswordCode: "",
+        newPassword: '',
+        resetPasswordCode: '',
         error: action.payload,
       };
     default:

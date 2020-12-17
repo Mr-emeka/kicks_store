@@ -1,17 +1,17 @@
-import React from "react";
-import FormInput from "../../custom/Input/";
-import { connect } from "react-redux";
-import { registerUser } from "../../../redux/actions";
-import { useHistory } from "react-router-dom";
-import AuthLayout from "../../layouts/AuthLayout";
+import React from 'react';
+import FormInput from '../../custom/Input/';
+import { connect } from 'react-redux';
+import { registerUser } from '../../../redux/actions';
+import { useHistory } from 'react-router-dom';
+import AuthLayout from '../../layouts/AuthLayout';
 
 const SignUp = ({ registerUserAction, state }) => {
   const history = useHistory();
   const [user, setUser] = React.useState({
-    displayName: "",
-    email: "",
-    password: "",
-    confirmPass: "",
+    displayName: '',
+    email: '',
+    password: '',
+    confirmPass: '',
   });
   const { displayName, email, password, confirmPass } = user;
   console.log(state);
@@ -19,15 +19,16 @@ const SignUp = ({ registerUserAction, state }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPass) {
-      alert("passwords do not match");
+      alert('passwords do not match');
       return;
     }
     if (
+      // eslint-disable-next-line no-control-regex
       !/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/.test(
         email
       )
     ) {
-      alert("Invalid Email Address");
+      alert('Invalid Email Address');
       return;
     }
     return registerUserAction({ displayName, email, password, history });
@@ -49,7 +50,6 @@ const SignUp = ({ registerUserAction, state }) => {
                 name="displayName"
                 ariaDescribedby="name"
                 placeholder="John Doe"
-                name="displayName"
                 callback={handleChange}
               />
               <small id="emailHelp" className="form-text text-muted">
@@ -64,7 +64,6 @@ const SignUp = ({ registerUserAction, state }) => {
                 name="email"
                 ariaDescribedby="emailHelp"
                 placeholder="Email."
-                name="email"
                 callback={handleChange}
               />
             </div>
